@@ -1,0 +1,10 @@
+[package]
+name = "drive"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+either = { version = "1.8.1", features = ["serde", "use_std"]}
+rocket = { version = "=0.5.0-rc.3", features = ["json"] }
