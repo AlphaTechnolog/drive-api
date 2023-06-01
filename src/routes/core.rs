@@ -1,26 +1,24 @@
 use either::*;
 use rocket::http::Status;
 use rocket::{*, response::status, serde::json::Json};
-use crate::path::pth_by_dir;
-use crate::reader::{SimpleArchive, list_dir};
+use crate::reader::SimpleArchive;
 use crate::error::SimpleError;
 use crate::config::Config;
+use crate::controllers::fs::Fs;
 
 #[get("/list_dir/<dirname>")]
-pub fn listing_by_dirname(dirname: &str, config: &State<Config>) -> status::Custom<Either<Json<Vec<SimpleArchive>>, Json<SimpleError>>> {
-    let path = pth_by_dir(dirname, config);
+pub fn listing_by_dirname(dirname: String, config: &State<Config>) -> status::Custom<Either<Json<Vec<SimpleArchive>>, Json<SimpleError>>> {
+    let fs = Fs {
+        dirname,
+        config
+    };
 
-    match list_dir(path.as_path()) {
+    match fs.list() {
         Ok(files_list) => {
-            let mut result: Vec<SimpleArchive> = Vec::new();
-            for archive in files_list {
-                result.push(archive.to_simple_archive());
-            }
-            
-            status::Custom(Status::Ok, Left(Json(result)))
+            status::Custom(Status::Ok, Left(Json(files_list)))
         },
-        Err(err) => {
-            status::Custom(Status::BadRequest, Right(Json(SimpleError::new(err.to_string()))))
+        Err(error) => {
+            status::Custom(Status::BadRequest, Right(Json(error)))
         }
     }
 }

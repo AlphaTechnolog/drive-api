@@ -5,6 +5,7 @@ mod config;
 mod reader;
 mod error;
 mod routes;
+mod controllers;
 
 use config::Config;
 use rocket::fairing::AdHoc;
